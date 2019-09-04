@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIWriter : MonoBehaviour
-{
+public class UIWriter : MonoBehaviour {
     GameObject canvas;
 
     public string toggleChild(string childName) {
@@ -23,13 +22,11 @@ public class UIWriter : MonoBehaviour
         return child;
     }
 
-    void Start()
-    {
+    void Start() {
         canvas = GameObject.Find("Canvas");
     }
 
-    void Update()
-    {
+    void Update() {
 
     }
 }
