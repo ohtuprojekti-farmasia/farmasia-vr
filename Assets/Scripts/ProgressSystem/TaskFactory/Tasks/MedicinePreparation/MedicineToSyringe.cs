@@ -2,8 +2,10 @@ using System.Collections.Generic;
 using UnityEngine;
 public class MedicineToSyringe : TaskBase {
     #region Fields
-    private string[] conditions = { "RightSizeSyringe", "NeedleToSyringe", "NeedleThroughBottleCap", "PreviousTasksCompleted" };
-    private List<TaskType> requiredTasks = new List<TaskType> {TaskType.DisinfectBottles};
+    private string[] conditions = { "RightAmountInSyringe", "PreviousTasksCompleted" };
+    private List<TaskType> requiredTasks = new List<TaskType> {TaskType.SelectTools, TaskType.SelectMedicine};
+    // COMMENTED FOR DEMO private string[] conditions = { "RightSizeSyringe", "NeedleToSyringe", "NeedleThroughBottleCap", "PreviousTasksCompleted" };
+    // COMMENTED FOR DEMO private List<TaskType> requiredTasks = new List<TaskType> {TaskType.DisinfectBottles};
     #endregion
 
     #region Constructor
@@ -36,15 +38,44 @@ public class MedicineToSyringe : TaskBase {
             return;
         }
         ObjectType type = item.ObjectType;
+        
+        if (type == ObjectType.Syringe) {
+            Syringe syringe = item as Syringe;
+            if (syringe.GetContainer().Amount == 20) {
+                    EnableCondition("RightAmountInSyringe");
+            }
+        }
+
+        if (CheckPreviousTaskCompletion(requiredTasks)) {
+            EnableCondition("PreviousTasksCompleted");
+        }
+
+        bool check = CheckClearConditions(true);
+        if (!check && base.clearConditions["PreviousTasksCompleted"]) {
+            UISystem.Instance.CreatePopup(-1, "Wrong amount of medicine", MessageType.Mistake);
+            G.Instance.Progress.calculator.Subtract(TaskType.MedicineToSyringe);
+            base.FinishTask();
+        }
+    }
+    /* COMMENTED FOR DEMO private void ToSyringe(CallbackData data) {
+        GameObject g = data.DataObject as GameObject;
+        GeneralItem item = g.GetComponent<GeneralItem>();
+        if (item == null) {
+            return;
+        }
+        ObjectType type = item.ObjectType;
         switch (type) {
             case ObjectType.Syringe:
-                //check whether the chosen syringe has the right size
-                EnableCondition("RightSizeSyringe");
+                Syringe syringe = item as Syringe;
+                if (syringe.GetContainer().Capacity == 20) {
+                    EnableCondition("RightSizeSyringe");
+                }
                 break;
             case ObjectType.Needle:
                 EnableCondition("NeedleToSyringe");
                 break;
             case ObjectType.BottleCap:
+                //check if the needle goes through the bottlecap
                 EnableCondition("NeedleThroughBottleCap");
                 break;
         }
@@ -60,7 +91,7 @@ public class MedicineToSyringe : TaskBase {
             G.Instance.Progress.calculator.Subtract(TaskType.MedicineToSyringe);
             base.FinishTask();
         }
-    }
+    } */
     #endregion
 
     #region Public Methods
